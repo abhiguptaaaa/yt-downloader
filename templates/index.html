@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Multi-Format YouTube Downloader</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Using a vibrant purple similar to the reference image's background */
+            background: #6A5ACD; /* SlateBlue - adjust if you prefer a gradient */
+            /* Or keep your gradient if you prefer */
+            /* background: linear-gradient(125deg, #6C63FF, #FF6B6B, #4ECDC4, #F67280); */
+            /* background-size: 300% 300%; */
+            /* animation: gradientBG 12s ease infinite; */
+            color: #fff;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            padding: 20px; /* Add padding to body for small screens */
+        }
+
+        /* @keyframes gradientBG { ... } */ /* Keep if using gradient */
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            z-index: 10;
+        }
+
+        .glass-card {
+            /* --- Refined Glassmorphism Effect --- */
+            /* Subtle gradient background simulating light */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+            /* Stronger blur effect */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); /* Safari support */
+            /* Slightly more pronounced border */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+             /* Softer shadow */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            /* --- End Refined Effect --- */
+
+            border-radius: 25px; /* Slightly larger radius like image */
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden; /* Important for border-radius + backdrop */
+        }
+
+        h1 {
+            font-size: clamp(24px, 5vw, 32px); /* Responsive font size */
+            margin-bottom: 30px;
+            position: relative;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .download-icon {
+            display: inline-block;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+            vertical-align: middle; /* Align icon better with text */
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 15px 20px;
+            border: none; /* Remove default border */
+            border-radius: 12px;
+            /* Slightly different glass effect for inputs */
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px); /* Optional: lighter blur on inputs */
+            -webkit-backdrop-filter: blur(5px);
+            color: #fff;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Lighter shadow for inputs */
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border-color: rgba(255, 255, 255, 0.5); /* Highlight border on focus */
+        }
+
+        .input-group select {
+            appearance: none; /* Remove default arrow */
+            cursor: pointer;
+            /* Add custom arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px; /* Make space for arrow */
+        }
+
+        .input-group select option {
+            background: #4a4a6e; /* Darker background for dropdown */
+            color: #fff;
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 20px;
+            top: -10px;
+            background: linear-gradient(135deg, rgba(106, 90, 205, 0.8), rgba(106, 90, 205, 0.6)); /* Match background */
+            padding: 2px 8px; /* Adjusted padding */
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            z-index: 1;
+            backdrop-filter: blur(2px);
+             -webkit-backdrop-filter: blur(2px);
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(to right, #FF416C, #FF4B2B);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(255, 65, 108, 0.3);
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px; /* Add some space above button */
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.4);
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+        }
+
+        .footer a {
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .footer a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: #fff;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+
+        .footer a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        /* Removed the floating shapes and brand to focus on the card */
+        /* .shapes { ... } */
+        /* .brand { ... } */
+
+    </style>
+</head>
+<body>
+    <!-- Removed shapes div -->
+    <div class="container">
+        <div class="glass-card">
+            <h1>
+                <span class="download-icon">🎬</span>
+                YouTube Downloader
+            </h1>
+
+            <form action="/download" method="post"> <!-- Ensure your backend handles this -->
+                <div class="input-group">
+                    <label>YouTube URL</label>
+                    <input type="url" name="url" placeholder="Paste YouTube URL here" required> <!-- Use type="url" -->
+                </div>
+
+                <div class="input-group">
+                    <label>Format</label>
+                    <select name="format" required>
+                        <option value="" disabled selected>Select Format</option> <!-- Add placeholder -->
+                        <option value="best">Best Quality (mp4)</option>
+                        <option value="mp4">mp4</option>
+                        <option value="webm">webm</option>
+                        <option value="mkv">mkv</option>
+                        <option value="mp3">mp3 (Audio Only)</option>
+                        <option value="m4a">m4a (Audio Only)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="download-btn">Download Now</button>
+            </form>
+
+            <div class="footer">
+                Having trouble? Contact: <a href="https://github.com/akashraj231/yt-downloader" target="_blank" rel="noopener noreferrer">Akash Raj</a>
+            </div>
+        </div>
+    </div>
+     <!-- Removed brand div -->
+</body>
+</html>
